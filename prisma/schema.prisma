@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ugel {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  strImages String
+  colegios  Colegio[]
+}
+
+model Colegio {
+  id            Int      @id @default(autoincrement())
+  codigoModular String
+  distrito      String
+  direccion     String?
+  grados        Grados[]
+  ugelId        Int
+  ugel          Ugel     @relation(fields: [ugelId], references: [id])
+
+  UsuarioId Int     @unique
+  Usuario   Usuario @relation(fields: [UsuarioId], references: [id])
+}
+
+model Grados {
+  id         Int     @id @default(autoincrement())
+  nivel      Nivel
+  grado      String
+  nroAlumnos Int
+  nroCupos   Int
+  colegioId  Int
+  colegio    Colegio @relation(fields: [colegioId], references: [id])
+}
+
+model Usuario {
+  id          Int         @id @default(autoincrement())
+  dni         Int
+  nombre      String
+  email       String
+  password    String
+  tipoUsuario TipoUsuario
+  colegio     Colegio?
+}
+
+enum TipoUsuario {
+  PERSONALDELAUGEL
+  DIRECTOR
+}
+
+enum Nivel {
+  INICIAL
+  PRIMARIA
+  SECUNDARIA
+}
