@@ -20,8 +20,10 @@ model Ugel {
 model Colegio {
   id            Int      @id @default(autoincrement())
   codigoModular String
+  nombre        String
   distrito      String
   direccion     String?
+  strImages     String
   grados        Grados[]
   ugelId        Int
   ugel          Ugel     @relation(fields: [ugelId], references: [id])
