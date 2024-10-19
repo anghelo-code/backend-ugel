@@ -1,29 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUgelDto } from './dto/create-ugel.dto';
 import { UpdateUgelDto } from './dto/update-ugel.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UgelService {
   constructor(private prismaService: PrismaService) { }
 
-  create(createUgelDto: CreateUgelDto) {
-    return 'This action adds a new ugel';
+  async create(createUgelDto: CreateUgelDto) {
+
+    try {
+      const ugel = await this.prismaService.ugel.create({
+        data: {
+          ...createUgelDto
+        }
+      })
+      return `Ugel with name ${ugel.nombre} has been created`;
+    }
+    catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new ConflictException(`Ugel with name ${createUgelDto.nombre} alreasy exists`)
+        }
+      }
+    }
+
   }
 
   findAll() {
-    return `This action returns all ugel`;
+    return this.prismaService.ugel.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ugel`;
+  async findOne(id: number) {
+    const ugel = await this.prismaService.ugel.findUnique({
+      where: {
+        id: id
+      }
+    })
+    if (!ugel) {
+      throw new NotFoundException(`Ugel with id ${id} not found`);
+    }
+
+    return ugel
   }
 
-  update(id: number, updateUgelDto: UpdateUgelDto) {
-    return `This action updates a #${id} ugel`;
+  async update(id: number, updateUgelDto: UpdateUgelDto) {
+    const ugel = await this.prismaService.ugel.update({
+      where: {
+        id: id
+      },
+      data: updateUgelDto
+    })
+    if (!ugel) {
+      throw new NotFoundException(`Ugel with id ${id} not found`);
+    }
+
+    return ugel
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ugel`;
+  async remove(id: number) {
+    const ugel = await this.prismaService.ugel.delete({
+      where: {
+        id: id
+      }
+    })
+    if (!ugel) {
+      throw new NotFoundException(`Ugel with id ${id} not found`);
+    }
+
+    return `Ugel with id ${id} has been deleted`;
   }
 }

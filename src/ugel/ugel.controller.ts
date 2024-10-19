@@ -3,9 +3,9 @@ import { UgelService } from './ugel.service';
 import { CreateUgelDto } from './dto/create-ugel.dto';
 import { UpdateUgelDto } from './dto/update-ugel.dto';
 
-@Controller('ugel')
+@Controller('api/ugel')
 export class UgelController {
-  constructor(private readonly ugelService: UgelService) {}
+  constructor(private readonly ugelService: UgelService) { }
 
   @Post()
   create(@Body() createUgelDto: CreateUgelDto) {
