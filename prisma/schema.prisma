@@ -12,7 +12,7 @@ datasource db {
 
 model Ugel {
   id        Int       @id @default(autoincrement())
-  nombre    String
+  nombre    String    @unique
   strImages String
   colegios  Colegio[]
 }
